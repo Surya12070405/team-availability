@@ -31,7 +31,13 @@ function awkwardAt(ms, tz) {
 
 /** True if any part of the window falls between 22:00 and 07:00 in the given timezone. */
 export function windowIsAwkward(startMs, durationMinutes, tz) {
-  for (let t = startMs; t < startMs + durationMinutes * MINUTE; t += 30 * MINUTE) {
+  const endMs = startMs + durationMinutes * MINUTE;
+  if (awkwardAt(startMs, tz)) return true;
+  // The awkward range begins on a local hour boundary, so besides the start only the local
+  // top-of-hour instants inside the window need checking. Sampling at fixed 30-minute steps
+  // from the start missed zones with :45 offsets (e.g. Asia/Kathmandu, 21:45-22:15).
+  const nextHour = DateTime.fromMillis(startMs, { zone: tz }).startOf('hour').plus({ hours: 1 }).toMillis();
+  for (let t = nextHour; t < endMs; t += 60 * MINUTE) {
     if (awkwardAt(t, tz)) return true;
   }
   return false;
