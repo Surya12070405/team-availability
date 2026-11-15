@@ -8,7 +8,10 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/team_a
 
 async function main() {
   try {
-    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
+    await mongoose.connect(MONGODB_URI, {
+      dbName: 'team_availability',
+      serverSelectionTimeoutMS: 5000,
+    });
     await ensureIndexes();
     console.log('Connected to MongoDB');
   } catch (err) {
