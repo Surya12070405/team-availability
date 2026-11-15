@@ -1,21 +1,20 @@
-import 'dotenv/config';
+import { MONGODB_URI, DB_NAME, redactUri } from './env.js';
 import mongoose from 'mongoose';
 import { createApp } from './app.js';
 import { ensureIndexes } from './models/index.js';
 
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/team_availability';
 
 async function main() {
   try {
     await mongoose.connect(MONGODB_URI, {
-      dbName: 'team_availability',
+      dbName: DB_NAME,
       serverSelectionTimeoutMS: 5000,
     });
     await ensureIndexes();
     console.log('Connected to MongoDB');
   } catch (err) {
-    console.error(`Could not connect to MongoDB at ${MONGODB_URI}: ${err.message}`);
+    console.error(`Could not connect to MongoDB at ${redactUri(MONGODB_URI)}: ${err.message}`);
     console.error('Start MongoDB (or set MONGODB_URI in server/.env) and try again.');
     process.exit(1);
   }

@@ -95,5 +95,11 @@ describe('windowIsAwkward', () => {
     expect(windowIsAwkward(t, 60, 'Europe/London')).toBe(false);
     expect(windowIsAwkward(t, 60, 'America/New_York')).toBe(true); // 04:00
     expect(windowIsAwkward(Date.parse('2026-11-09T21:30:00Z'), 60, 'Europe/London')).toBe(true); // runs into 22:00
+    // 16:00Z is 21:45 in Kathmandu (+5:45); a 30-minute meeting runs until 22:15 local
+    expect(windowIsAwkward(Date.parse('2026-11-09T16:00:00Z'), 30, 'Asia/Kathmandu')).toBe(true);
+    // 10:00Z-10:30Z is 15:45-16:15 in Kathmandu, a normal hour
+    expect(windowIsAwkward(Date.parse('2026-11-09T10:00:00Z'), 30, 'Asia/Kathmandu')).toBe(false);
+    // ends exactly at 22:00 local: not awkward
+    expect(windowIsAwkward(Date.parse('2026-11-09T21:00:00Z'), 60, 'Europe/London')).toBe(false);
   });
 });
