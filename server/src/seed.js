@@ -1,13 +1,12 @@
 // Creates a demo board at /b/demo-team with five teammates across five time zones.
 //   npm run seed
-import 'dotenv/config';
+import { MONGODB_URI as uri, DB_NAME } from './env.js';
 import mongoose from 'mongoose';
 import { DateTime } from 'luxon';
 import { Board, Member, Option, ensureIndexes } from './models/index.js';
 import { generateSlots } from './lib/slots.js';
 import { hashToken } from './middleware/auth.js';
 
-const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/team_availability';
 const SLUG = 'demo-team';
 
 function rng(seed) {
@@ -30,7 +29,7 @@ const TEAM = [
 ];
 
 try {
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 5000 });
+  await mongoose.connect(uri, { dbName: DB_NAME, serverSelectionTimeoutMS: 5000 });
   await ensureIndexes();
 
   const old = await Board.findOne({ slug: SLUG });
